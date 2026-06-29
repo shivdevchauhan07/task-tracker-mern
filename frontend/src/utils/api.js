@@ -1,11 +1,9 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: 'https://taskflow-shivdev.onrender.com/api',
   headers: { 'Content-Type': 'application/json' }
 });
-
-API.interceptors.request.use(config => config, error => Promise.reject(error));
 
 API.interceptors.response.use(
   response => response.data,
