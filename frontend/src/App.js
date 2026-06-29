@@ -5,9 +5,11 @@ import TaskCard from './components/TaskCard';
 import TaskForm from './components/TaskForm';
 import FilterBar from './components/FilterBar';
 import StatsBar from './components/StatsBar';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import './App.css';
 
-function TaskList() {
+function TaskList({ user, onLogout }) {
   const { tasks, loading, fetchTasks, fetchStats, pagination } = useTaskContext();
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState(null);
@@ -37,11 +39,20 @@ function TaskList() {
             <span className="title-icon">⚡</span>
             TaskFlow
           </h1>
-          <span className="app-subtitle">Stay on top of everything</span>
+          <span className="app-subtitle">Welcome, {user.name}!</span>
         </div>
-        <button className="btn-primary btn-new" onClick={() => setShowForm(true)}>
-          + New Task
-        </button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <button className="btn-primary btn-new" onClick={() => setShowForm(true)}>
+            + New Task
+          </button>
+          <button onClick={onLogout} style={{
+            background: 'none', border: '1px solid #e2e8f0',
+            borderRadius: 8, padding: '8px 14px', cursor: 'pointer',
+            fontSize: 14, color: '#64748b'
+          }}>
+            Logout
+          </button>
+        </div>
       </header>
 
       <main className="main-content">
@@ -71,7 +82,7 @@ function TaskList() {
             </div>
             {pagination.totalPages > 1 && (
               <div className="pagination">
-                <span>Page {pagination.page} of {pagination.totalPages} ({pagination.total} tasks)</span>
+                <span>Page {pagination.page} of {pagination.totalPages}</span>
               </div>
             )}
           </>
@@ -93,9 +104,32 @@ function TaskList() {
 }
 
 export default function App() {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [page, setPage] = useState('login');
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
+  if (!user) {
+    if (page === 'login') {
+      return <Login onLogin={handleLogin} onGoRegister={() => setPage('register')} />;
+    }
+    return <Register onLogin={handleLogin} onGoLogin={() => setPage('login')} />;
+  }
+
   return (
     <TaskProvider>
-      <TaskList />
+      <TaskList user={user} onLogout={handleLogout} />
     </TaskProvider>
   );
 }
