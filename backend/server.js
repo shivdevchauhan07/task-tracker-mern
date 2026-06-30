@@ -7,7 +7,7 @@ dotenv.config();
 
 const taskRoutes = require('./routes/taskRoutes');
 const authRoutes = require('./routes/authRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 
 app.use(cors({
