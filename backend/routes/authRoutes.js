@@ -6,7 +6,20 @@ const User = require('../models/User');
 const Task = require('../models/Task');
 const OTP = require('../models/OTP');
 const { protect } = require('../middleware/auth');
-const { sendOTPEmail } = require('../utils/sendEmail');
+// Test email route
+router.get('/test-email', async (req, res) => {
+  try {
+    await sendOTPEmail(
+      process.env.GMAIL_USER,
+      '123456',
+      'Test User'
+    );
+    res.json({ message: 'Test email sent successfully!' });
+  } catch (err) {
+    console.error('Email error:', err);
+    res.status(500).json({ message: err.message, code: err.code });
+  }
+});
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'secret123', {
