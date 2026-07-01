@@ -7,11 +7,13 @@ import FilterBar from './components/FilterBar';
 import StatsBar from './components/StatsBar';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Profile from './pages/Profile';
 import './App.css';
 
-function TaskList({ user, onLogout, darkMode, toggleDark }) {
-  const { tasks, loading, fetchTasks, fetchStats, pagination, setFilters, filters } = useTaskContext();
+function TaskList({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
+  const { tasks, loading, fetchTasks, fetchStats, pagination, setFilters } = useTaskContext();
   const [showForm, setShowForm] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [activeQuick, setActiveQuick] = useState('all');
 
@@ -60,11 +62,21 @@ function TaskList({ user, onLogout, darkMode, toggleDark }) {
             <span className="title-icon">🤖</span>
             ShivTask AI
           </h1>
-          <span className="app-subtitle">Welcome, {user.name}! • Plan • Track • Achieve</span>
+          <span className="app-subtitle">
+            Welcome, {user.name}! • Plan • Track • Achieve
+          </span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <button className="theme-toggle" onClick={toggleDark} title="Toggle theme">
             {darkMode ? '☀️' : '🌙'}
+          </button>
+          <button onClick={() => setShowProfile(true)} style={{
+            background: 'var(--primary)', color: '#fff',
+            border: 'none', borderRadius: '50%',
+            width: 36, height: 36, fontSize: 16,
+            cursor: 'pointer', fontWeight: 800
+          }} title="My Profile">
+            {user.name.charAt(0).toUpperCase()}
           </button>
           <button className="btn-primary btn-new" onClick={() => setShowForm(true)}>
             + New Task
@@ -82,7 +94,6 @@ function TaskList({ user, onLogout, darkMode, toggleDark }) {
       <main className="main-content">
         <StatsBar />
 
-        {/* Quick Filters */}
         <div className="quick-filters">
           {[
             { key: 'all', label: '🗂 All' },
@@ -140,6 +151,14 @@ function TaskList({ user, onLogout, darkMode, toggleDark }) {
         <TaskForm task={editTask} onClose={handleCloseForm} />
       )}
 
+      {showProfile && (
+        <Profile
+          user={user}
+          onUpdate={onUpdateUser}
+          onClose={() => setShowProfile(false)}
+        />
+      )}
+
       <Toaster
         position="bottom-right"
         toastOptions={{
@@ -166,6 +185,7 @@ export default function App() {
   }, [darkMode]);
 
   const handleLogin = (userData) => setUser(userData);
+  const handleUpdateUser = (userData) => setUser(userData);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -184,7 +204,13 @@ export default function App() {
 
   return (
     <TaskProvider>
-      <TaskList user={user} onLogout={handleLogout} darkMode={darkMode} toggleDark={toggleDark} />
+      <TaskList
+        user={user}
+        onLogout={handleLogout}
+        onUpdateUser={handleUpdateUser}
+        darkMode={darkMode}
+        toggleDark={toggleDark}
+      />
     </TaskProvider>
   );
 }
