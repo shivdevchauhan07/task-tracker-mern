@@ -2,18 +2,26 @@ const Task = require('../models/Task');
 
 exports.getTasks = async (req, res) => {
   try {
-    const { status, priority, search, sortBy = 'createdAt', order = 'desc', page = 1, limit = 20 } = req.query;
+    const {
+      status, priority, search, category,
+      sortBy = 'createdAt', order = 'desc',
+      page = 1, limit = 20
+    } = req.query;
 
-    const filter = {};
+    const filter = { user: req.user._id };
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
+    if (category) filter.category = category;
     if (search) filter.title = { $regex: search, $options: 'i' };
 
     const sortOrder = order === 'asc' ? 1 : -1;
     const skip = (Number(page) - 1) * Number(limit);
 
     const [tasks, total] = await Promise.all([
-      Task.find(filter).sort({ [sortBy]: sortOrder }).skip(skip).limit(Number(limit)),
+      Task.find(filter)
+        .sort({ [sortBy]: sortOrder })
+        .skip(skip)
+        .limit(Number(limit)),
       Task.countDocuments(filter)
     ]);
 
@@ -30,7 +38,10 @@ exports.getTasks = async (req, res) => {
 
 exports.getTask = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    });
     if (!task) return res.status(404).json({ message: 'Task not found' });
     res.json(task);
   } catch (err) {
@@ -40,7 +51,10 @@ exports.getTask = async (req, res) => {
 
 exports.createTask = async (req, res) => {
   try {
-    const task = await Task.create(req.body);
+    const task = await Task.create({
+      ...req.body,
+      user: req.user._id
+    });
     res.status(201).json(task);
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -53,8 +67,8 @@ exports.createTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
       { ...req.body },
       { new: true, runValidators: true }
     );
@@ -71,7 +85,10 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
+    const task = await Task.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id
+    });
     if (!task) return res.status(404).json({ message: 'Task not found' });
     res.json({ message: 'Task deleted successfully', id: req.params.id });
   } catch (err) {
@@ -82,6 +99,7 @@ exports.deleteTask = async (req, res) => {
 exports.getStats = async (req, res) => {
   try {
     const stats = await Task.aggregate([
+      { $match: { user: req.user._id } },
       { $group: { _id: '$status', count: { $sum: 1 } } }
     ]);
     const formatted = { todo: 0, 'in-progress': 0, completed: 0, total: 0 };
