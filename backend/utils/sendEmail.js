@@ -41,8 +41,7 @@ const sendOTPEmail = async (email, otp, name) => {
     `
   };
 
-  const info = await transporter.sendMail(mailOptions);
-console.log('Email sent:', info.response);
+  await transporter.sendMail(mailOptions);
 };
 
 module.exports = { sendOTPEmail };
