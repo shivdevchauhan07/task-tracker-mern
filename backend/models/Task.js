@@ -24,6 +24,11 @@ const taskSchema = new mongoose.Schema(
       enum: ['low', 'medium', 'high'],
       default: 'medium'
     },
+    category: {
+      type: String,
+      enum: ['Work', 'Personal', 'Study', 'Health', 'Finance', 'Shopping', 'Other'],
+      default: 'Other'
+    },
     dueDate: {
       type: Date,
       default: null
@@ -31,11 +36,18 @@ const taskSchema = new mongoose.Schema(
     tags: {
       type: [String],
       default: []
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
     }
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
+
+taskSchema.index({ status: 1, priority: 1 });
+taskSchema.index({ createdAt: -1 });
+taskSchema.index({ user: 1 });
 
 module.exports = mongoose.model('Task', taskSchema);
