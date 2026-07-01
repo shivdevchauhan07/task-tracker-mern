@@ -43,8 +43,8 @@ export default function Register({ onLogin, onGoLogin }) {
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: 32, width: '100%', maxWidth: 400, boxShadow: '0 4px 24px rgba(0,0,0,.08)' }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#6366f1', marginBottom: 4 }}>⚡ TaskFlow</h1>
-        <p style={{ color: '#64748b', marginBottom: 28 }}>Create your account</p>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1a3a8f', marginBottom: 4 }}>🤖 ShivTask AI</h1>
+<p style={{ color: '#64748b', marginBottom: 28 }}>Join ShivTask AI today!</p>
 
         {error && (
           <div style={{ background: '#fef2f2', color: '#ef4444', padding: '10px 14px', borderRadius: 8, marginBottom: 16, fontSize: 14 }}>
