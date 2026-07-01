@@ -9,10 +9,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import './App.css';
 
-function TaskList({ user, onLogout }) {
-  const { tasks, loading, fetchTasks, fetchStats, pagination } = useTaskContext();
+function TaskList({ user, onLogout, darkMode, toggleDark }) {
+  const { tasks, loading, fetchTasks, fetchStats, pagination, setFilters, filters } = useTaskContext();
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const [activeQuick, setActiveQuick] = useState('all');
 
   useEffect(() => {
     fetchTasks();
@@ -31,6 +32,26 @@ function TaskList({ user, onLogout }) {
     fetchStats();
   };
 
+  const handleQuickFilter = (type) => {
+    setActiveQuick(type);
+    if (type === 'all') {
+      setFilters({ status: '', priority: '' });
+      fetchTasks({ status: '', priority: '' });
+    } else if (type === 'completed') {
+      setFilters({ status: 'completed', priority: '' });
+      fetchTasks({ status: 'completed', priority: '' });
+    } else if (type === 'pending') {
+      setFilters({ status: 'todo', priority: '' });
+      fetchTasks({ status: 'todo', priority: '' });
+    } else if (type === 'high') {
+      setFilters({ priority: 'high', status: '' });
+      fetchTasks({ priority: 'high', status: '' });
+    } else if (type === 'inprogress') {
+      setFilters({ status: 'in-progress', priority: '' });
+      fetchTasks({ status: 'in-progress', priority: '' });
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -41,14 +62,17 @@ function TaskList({ user, onLogout }) {
           </h1>
           <span className="app-subtitle">Welcome, {user.name}! • Plan • Track • Achieve</span>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="theme-toggle" onClick={toggleDark} title="Toggle theme">
+            {darkMode ? '☀️' : '🌙'}
+          </button>
           <button className="btn-primary btn-new" onClick={() => setShowForm(true)}>
             + New Task
           </button>
           <button onClick={onLogout} style={{
-            background: 'none', border: '1px solid #e2e8f0',
+            background: 'none', border: '1px solid var(--border)',
             borderRadius: 8, padding: '8px 14px', cursor: 'pointer',
-            fontSize: 14, color: '#64748b'
+            fontSize: 14, color: 'var(--text-muted)'
           }}>
             Logout
           </button>
@@ -57,6 +81,26 @@ function TaskList({ user, onLogout }) {
 
       <main className="main-content">
         <StatsBar />
+
+        {/* Quick Filters */}
+        <div className="quick-filters">
+          {[
+            { key: 'all', label: '🗂 All' },
+            { key: 'pending', label: '⏳ Pending' },
+            { key: 'inprogress', label: '▶️ In Progress' },
+            { key: 'completed', label: '✅ Completed' },
+            { key: 'high', label: '🔴 High Priority' },
+          ].map(f => (
+            <button
+              key={f.key}
+              className={`quick-filter-btn ${activeQuick === f.key ? 'active' : ''}`}
+              onClick={() => handleQuickFilter(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
         <FilterBar />
 
         {loading ? (
@@ -67,14 +111,17 @@ function TaskList({ user, onLogout }) {
         ) : tasks.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📋</div>
-            <h3>No tasks yet</h3>
-            <p>Create your first task to get started.</p>
+            <h3>No tasks found</h3>
+            <p>Try a different filter or create a new task.</p>
             <button className="btn-primary" onClick={() => setShowForm(true)}>
               + Add Task
             </button>
           </div>
         ) : (
           <>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 12 }}>
+              {tasks.length} task{tasks.length !== 1 ? 's' : ''}
+            </p>
             <div className="task-grid">
               {tasks.map(task => (
                 <TaskCard key={task._id} task={task} onEdit={handleEdit} />
@@ -109,10 +156,16 @@ export default function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const [page, setPage] = useState('login');
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
+
+  const handleLogin = (userData) => setUser(userData);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -120,16 +173,18 @@ export default function App() {
     setUser(null);
   };
 
+  const toggleDark = () => setDarkMode(d => !d);
+
   if (!user) {
     if (page === 'login') {
-      return <Login onLogin={handleLogin} onGoRegister={() => setPage('register')} />;
+      return <Login onLogin={handleLogin} onGoRegister={() => setPage('register')} darkMode={darkMode} toggleDark={toggleDark} />;
     }
-    return <Register onLogin={handleLogin} onGoLogin={() => setPage('login')} />;
+    return <Register onLogin={handleLogin} onGoLogin={() => setPage('login')} darkMode={darkMode} toggleDark={toggleDark} />;
   }
 
   return (
     <TaskProvider>
-      <TaskList user={user} onLogout={handleLogout} />
+      <TaskList user={user} onLogout={handleLogout} darkMode={darkMode} toggleDark={toggleDark} />
     </TaskProvider>
   );
 }
