@@ -6,8 +6,15 @@ const emptyForm = {
   description: '',
   status: 'todo',
   priority: 'medium',
+  category: 'Other',
   dueDate: '',
   tags: ''
+};
+
+const CATEGORIES = ['Work', 'Personal', 'Study', 'Health', 'Finance', 'Shopping', 'Other'];
+const CATEGORY_ICONS = {
+  Work: '💼', Personal: '👤', Study: '📚',
+  Health: '💪', Finance: '💰', Shopping: '🛍️', Other: '📌'
 };
 
 export default function TaskForm({ task, onClose }) {
@@ -23,6 +30,7 @@ export default function TaskForm({ task, onClose }) {
         description: task.description || '',
         status: task.status || 'todo',
         priority: task.priority || 'medium',
+        category: task.category || 'Other',
         dueDate: task.dueDate ? task.dueDate.split('T')[0] : '',
         tags: task.tags?.join(', ') || ''
       });
@@ -78,6 +86,7 @@ export default function TaskForm({ task, onClose }) {
               className={errors.title ? 'error' : ''} />
             {errors.title && <span className="error-msg">{errors.title}</span>}
           </div>
+
           <div className="field">
             <label>Description</label>
             <textarea name="description" value={form.description}
@@ -86,6 +95,26 @@ export default function TaskForm({ task, onClose }) {
               className={errors.description ? 'error' : ''} />
             {errors.description && <span className="error-msg">{errors.description}</span>}
           </div>
+
+          <div className="field">
+            <label>Category</label>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {CATEGORIES.map(cat => (
+                <button key={cat} type="button"
+                  onClick={() => setForm(f => ({ ...f, category: cat }))}
+                  style={{
+                    padding: '6px 12px', borderRadius: 20, fontSize: 13,
+                    border: `2px solid ${form.category === cat ? 'var(--primary)' : 'var(--border)'}`,
+                    background: form.category === cat ? 'var(--primary)' : 'var(--card)',
+                    color: form.category === cat ? '#fff' : 'var(--text)',
+                    cursor: 'pointer', fontWeight: 500
+                  }}>
+                  {CATEGORY_ICONS[cat]} {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="field-row">
             <div className="field">
               <label>Status</label>
@@ -104,6 +133,7 @@ export default function TaskForm({ task, onClose }) {
               </select>
             </div>
           </div>
+
           <div className="field-row">
             <div className="field">
               <label>Due Date</label>
@@ -115,6 +145,7 @@ export default function TaskForm({ task, onClose }) {
                 placeholder="design, urgent, backend" />
             </div>
           </div>
+
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={onClose}>Cancel</button>
             <button type="submit" className="btn-primary" disabled={submitting}>
