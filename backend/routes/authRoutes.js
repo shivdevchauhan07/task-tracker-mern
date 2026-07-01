@@ -6,6 +6,7 @@ const User = require('../models/User');
 const Task = require('../models/Task');
 const OTP = require('../models/OTP');
 const { protect } = require('../middleware/auth');
+const { sendOTPEmail } = require('../utils/sendEmail');
 // Test email route
 router.get('/test-email', async (req, res) => {
   try {
