@@ -36,10 +36,10 @@ function TaskList({ user, onLogout }) {
       <header className="app-header">
         <div className="header-left">
           <h1 className="app-title">
-            <span className="title-icon">⚡</span>
-            TaskFlow
-          </h1>
-          <span className="app-subtitle">Welcome, {user.name}!</span>
+  <span className="title-icon">🤖</span>
+  ShivTask AI
+</h1>
+<span className="app-subtitle">Welcome, {user.name}! • Plan • Track • Achieve</span> {user.name}!</span>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <button className="btn-primary btn-new" onClick={() => setShowForm(true)}>
