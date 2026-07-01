@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const taskController = require('../controllers/taskController');
+const { protect } = require('../middleware/auth');
 
 const validateTask = [
   body('title')
@@ -17,6 +18,10 @@ const validateTask = [
   body('priority')
     .optional()
     .isIn(['low', 'medium', 'high']).withMessage('Invalid priority'),
+  body('category')
+    .optional()
+    .isIn(['Work', 'Personal', 'Study', 'Health', 'Finance', 'Shopping', 'Other'])
+    .withMessage('Invalid category'),
   body('dueDate')
     .optional({ nullable: true })
     .isISO8601().withMessage('Invalid date format'),
@@ -29,6 +34,7 @@ const validateTask = [
   }
 ];
 
+router.use(protect);
 router.get('/stats', taskController.getStats);
 router.get('/', taskController.getTasks);
 router.get('/:id', taskController.getTask);
