@@ -1,6 +1,6 @@
 {
-  "short_name": "TaskFlow",
-  "name": "TaskFlow - Task Tracker",
+  "short_name": "ShivTask AI",
+  "name": "ShivTask AI - Plan Track Achieve",
   "icons": [
     {
       "src": "icon-192.png",
@@ -15,6 +15,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#6366f1",
-  "background_color": "#f8fafc"
+  "theme_color": "#1a3a8f",
+  "background_color": "#ffffff"
 }
