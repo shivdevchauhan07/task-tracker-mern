@@ -36,10 +36,10 @@ function TaskList({ user, onLogout }) {
       <header className="app-header">
         <div className="header-left">
           <h1 className="app-title">
-  <span className="title-icon">🤖</span>
-  ShivTask AI
-</h1>
-<span className="app-subtitle">Welcome, {user.name}! • Plan • Track • Achieve</span> {user.name}!</span>
+            <span className="title-icon">🤖</span>
+            ShivTask AI
+          </h1>
+          <span className="app-subtitle">Welcome, {user.name}! • Plan • Track • Achieve</span>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <button className="btn-primary btn-new" onClick={() => setShowForm(true)}>
@@ -96,7 +96,7 @@ function TaskList({ user, onLogout }) {
       <Toaster
         position="bottom-right"
         toastOptions={{
-          style: { background: '#1e1b4b', color: '#fff', borderRadius: '8px' }
+          style: { background: '#1a3a8f', color: '#fff', borderRadius: '8px' }
         }}
       />
     </div>
