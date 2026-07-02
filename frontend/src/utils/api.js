@@ -42,4 +42,10 @@ export const authAPI = {
   register: (data) => API.post('/auth/register', data)
 };
 
+export const aiAPI = {
+  suggest: (title) => API.post('/ai/suggest', { title }),
+  parse: (text) => API.post('/ai/parse', { text }),
+  summary: (tasks) => API.post('/ai/summary', { tasks })
+};
+
 export default API;
