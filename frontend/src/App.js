@@ -16,6 +16,8 @@ function TaskList({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
   const [showProfile, setShowProfile] = useState(false);
   const [editTask, setEditTask] = useState(null);
   const [activeQuick, setActiveQuick] = useState('all');
+const [aiSummary, setAiSummary] = useState('');
+const [summaryLoading, setSummaryLoading] = useState(false);
 
   useEffect(() => {
     fetchTasks();
