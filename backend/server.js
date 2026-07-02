@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const https = require('https');
 
 dotenv.config();
 
@@ -24,9 +25,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'API is running' });
 });
 
-// Test AI without auth
-app.get('/api/test-ai', async (req, res) => {
-  const https = require('https');
+app.get('/api/test-ai', (req, res) => {
   const data = JSON.stringify({
     model: 'claude-haiku-4-5',
     max_tokens: 100,
@@ -44,22 +43,22 @@ app.get('/api/test-ai', async (req, res) => {
     }
   };
 
-  const req = https.request(options, r => {
+  const apiReq = https.request(options, apiRes => {
     let body = '';
-    r.on('data', chunk => body += chunk);
-    r.on('end', () => {
+    apiRes.on('data', chunk => body += chunk);
+    apiRes.on('end', () => {
       res.json({
-        status: r.statusCode,
+        status: apiRes.statusCode,
         keyExists: !!process.env.CLAUDE_API_KEY,
-        keyPrefix: process.env.CLAUDE_API_KEY?.substring(0, 10),
+        keyPrefix: process.env.CLAUDE_API_KEY?.substring(0, 15),
         response: body.substring(0, 300)
       });
     });
   });
 
-  req.on('error', err => res.status(500).json({ error: err.message }));
-  req.write(data);
-  req.end();
+  apiReq.on('error', err => res.status(500).json({ error: err.message }));
+  apiReq.write(data);
+  apiReq.end();
 });
 
 app.use((err, req, res, next) => {
