@@ -55,7 +55,7 @@ const claudeAPI = (prompt) => {
 };
 
 // Test AI route
-router.get('/test', protect, async (req, res) => {
+router.get('/test',async (req, res) => {
   try {
     console.log('Testing Claude API...');
     const response = await claudeAPI('Say hello in one word');
