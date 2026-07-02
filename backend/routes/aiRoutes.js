@@ -6,7 +6,7 @@ const { protect } = require('../middleware/auth');
 const claudeAPI = (prompt) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      model: 'claude-haiku-4-5',
       max_tokens: 1024,
       messages: [{ role: 'user', content: prompt }]
     });
