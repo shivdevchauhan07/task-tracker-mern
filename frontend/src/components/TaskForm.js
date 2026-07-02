@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTaskContext } from '../context/TaskContext';
+import { aiAPI } from '../utils/api';
 
 const emptyForm = {
   title: '',
@@ -22,6 +23,10 @@ export default function TaskForm({ task, onClose }) {
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [nlText, setNlText] = useState('');
+  const [showNL, setShowNL] = useState(false);
+  const [aiHint, setAiHint] = useState('');
 
   useEffect(() => {
     if (task) {
@@ -49,6 +54,55 @@ export default function TaskForm({ task, onClose }) {
     const { name, value } = e.target;
     setForm(f => ({ ...f, [name]: value }));
     if (errors[name]) setErrors(e => ({ ...e, [name]: '' }));
+  };
+
+  // AI Smart Suggest based on title
+  const handleAISuggest = async () => {
+    if (!form.title.trim()) return;
+    setAiLoading(true);
+    setAiHint('');
+    try {
+      const suggestion = await aiAPI.suggest(form.title);
+      setForm(f => ({
+        ...f,
+        priority: suggestion.priority || f.priority,
+        category: suggestion.category || f.category,
+        dueDate: suggestion.dueDate || f.dueDate,
+        description: suggestion.description || f.description,
+        tags: suggestion.tags?.join(', ') || f.tags
+      }));
+      setAiHint('✨ AI filled in the details for you!');
+    } catch (err) {
+      setAiHint('AI suggestion failed. Try again.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Natural Language Parse
+  const handleNLParse = async () => {
+    if (!nlText.trim()) return;
+    setAiLoading(true);
+    setAiHint('');
+    try {
+      const parsed = await aiAPI.parse(nlText);
+      setForm({
+        title: parsed.title || '',
+        description: parsed.description || '',
+        status: 'todo',
+        priority: parsed.priority || 'medium',
+        category: parsed.category || 'Other',
+        dueDate: parsed.dueDate || '',
+        tags: parsed.tags?.join(', ') || ''
+      });
+      setShowNL(false);
+      setNlText('');
+      setAiHint('✨ AI created the task from your description!');
+    } catch (err) {
+      setAiHint('AI parsing failed. Try again.');
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const handleSubmit = async e => {
@@ -79,12 +133,54 @@ export default function TaskForm({ task, onClose }) {
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
         <form onSubmit={handleSubmit} className="task-form">
+
+          {/* Natural Language Input */}
+          {!task && (
+            <div style={{ background: 'var(--primary-light)', borderRadius: 10, padding: 12 }}>
+              <button type="button" onClick={() => setShowNL(!showNL)}
+                style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer', fontSize: 14, padding: 0 }}>
+                🤖 {showNL ? 'Hide AI Input' : 'Create with AI — just describe your task'}
+              </button>
+              {showNL && (
+                <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <input
+                    value={nlText}
+                    onChange={e => setNlText(e.target.value)}
+                    placeholder="e.g. Call doctor tomorrow at 3pm, high priority"
+                    style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 8, fontSize: 14, fontFamily: 'inherit', background: 'var(--card)', color: 'var(--text)', outline: 'none' }}
+                  />
+                  <button type="button" onClick={handleNLParse} disabled={aiLoading}
+                    style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: aiLoading ? .7 : 1 }}>
+                    {aiLoading ? '🤖 AI is thinking...' : '✨ Generate Task'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {aiHint && (
+            <div style={{ background: '#f0fdf4', color: '#10b981', padding: '8px 12px', borderRadius: 8, fontSize: 13, fontWeight: 500 }}>
+              {aiHint}
+            </div>
+          )}
+
           <div className="field">
             <label>Title *</label>
-            <input name="title" value={form.title} onChange={handleChange}
-              placeholder="What needs to be done?"
-              className={errors.title ? 'error' : ''} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input name="title" value={form.title} onChange={handleChange}
+                placeholder="What needs to be done?"
+                className={errors.title ? 'error' : ''}
+                style={{ flex: 1 }} />
+              {!task && (
+                <button type="button" onClick={handleAISuggest} disabled={aiLoading || !form.title.trim()}
+                  title="AI Smart Suggest"
+                  style={{ background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 8, padding: '0 12px', cursor: 'pointer', fontSize: 16, opacity: (!form.title.trim() || aiLoading) ? .5 : 1 }}>
+                  {aiLoading ? '⏳' : '🤖'}
+                </button>
+              )}
+            </div>
             {errors.title && <span className="error-msg">{errors.title}</span>}
+            {!task && form.title && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Tap 🤖 to auto-fill details with AI</span>}
           </div>
 
           <div className="field">
