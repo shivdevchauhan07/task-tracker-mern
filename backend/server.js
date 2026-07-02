@@ -7,6 +7,7 @@ dotenv.config();
 
 const taskRoutes = require('./routes/taskRoutes');
 const authRoutes = require('./routes/authRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 
