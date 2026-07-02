@@ -1,3 +1,4 @@
+import { aiAPI } from './utils/api';
 import React, { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { TaskProvider, useTaskContext } from './context/TaskContext';
