@@ -19,10 +19,24 @@ function TaskList({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
 const [aiSummary, setAiSummary] = useState('');
 const [summaryLoading, setSummaryLoading] = useState(false);
 
-  useEffect(() => {
-    fetchTasks();
-    fetchStats();
-  }, []);
+ useEffect(() => {
+  fetchTasks();
+  fetchStats();
+  loadAISummary();
+}, []);
+
+const loadAISummary = async () => {
+  setSummaryLoading(true);
+  try {
+    const data = await fetchTasks();
+    const { summary } = await aiAPI.summary(tasks);
+    setAiSummary(summary);
+  } catch (err) {
+    console.error('AI summary failed');
+  } finally {
+    setSummaryLoading(false);
+  }
+};
 
   const handleEdit = (task) => {
     setEditTask(task);
