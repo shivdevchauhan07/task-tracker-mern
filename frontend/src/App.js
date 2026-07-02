@@ -128,6 +128,20 @@ const loadAISummary = async () => {
             </button>
           ))}
         </div>
+{/* AI Summary */}
+{(aiSummary || summaryLoading) && (
+  <div style={{
+    background: 'linear-gradient(135deg, #1a3a8f, #6366f1)',
+    borderRadius: 12, padding: '14px 18px',
+    marginBottom: 16, color: '#fff',
+    display: 'flex', alignItems: 'center', gap: 10
+  }}>
+    <span style={{ fontSize: 24 }}>🤖</span>
+    <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>
+      {summaryLoading ? 'ShivTask AI is analyzing your tasks...' : aiSummary}
+    </p>
+  </div>
+)}
 
         <FilterBar />
 
