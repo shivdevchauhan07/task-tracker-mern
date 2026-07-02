@@ -3,68 +3,48 @@ const router = express.Router();
 const https = require('https');
 const { protect } = require('../middleware/auth');
 
-const claudeAPI = (prompt) => {
+const geminiAPI = (prompt) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
-      model: 'claude-haiku-4-5',
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }]
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 1024, temperature: 0.3 }
     });
 
-    console.log('Calling Claude API...');
-    console.log('API Key exists:', !!process.env.CLAUDE_API_KEY);
-
+    const apiKey = process.env.GEMINI_API_KEY;
     const options = {
-      hostname: 'api.anthropic.com',
-      path: '/v1/messages',
+      hostname: 'generativelanguage.googleapis.com',
+      path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      }
+      headers: { 'Content-Type': 'application/json' }
     };
 
     const req = https.request(options, res => {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
-        console.log('Claude response status:', res.statusCode);
-        console.log('Claude response body:', body.substring(0, 200));
         try {
           const parsed = JSON.parse(body);
           if (parsed.error) {
             reject(new Error(parsed.error.message));
-          } else {
-            resolve(parsed.content[0].text);
+            return;
           }
+          const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!text) {
+            reject(new Error('No response from Gemini'));
+            return;
+          }
+          resolve(text);
         } catch (err) {
-          reject(new Error('Failed to parse AI response'));
+          reject(new Error('Failed to parse Gemini response'));
         }
       });
     });
 
-    req.on('error', (err) => {
-      console.error('Claude API request error:', err.message);
-      reject(err);
-    });
-
+    req.on('error', reject);
     req.write(data);
     req.end();
   });
 };
-
-// Test AI route
-router.get('/test',async (req, res) => {
-  try {
-    console.log('Testing Claude API...');
-    const response = await claudeAPI('Say hello in one word');
-    res.json({ success: true, response });
-  } catch (err) {
-    console.error('AI test error:', err.message);
-    res.status(500).json({ message: err.message });
-  }
-});
 
 // Smart task suggestions
 router.post('/suggest', protect, async (req, res) => {
@@ -73,23 +53,23 @@ router.post('/suggest', protect, async (req, res) => {
     if (!title) return res.status(400).json({ message: 'Title is required' });
 
     const prompt = `You are a smart task management AI. Based on this task title: "${title}"
-    
-Suggest the best values. Respond ONLY with valid JSON:
+
+Suggest the best values. Respond ONLY with valid JSON, no explanation, no markdown:
 {
   "priority": "low" or "medium" or "high",
   "category": one of ["Work", "Personal", "Study", "Health", "Finance", "Shopping", "Other"],
-  "dueDate": "YYYY-MM-DD",
-  "description": "1-2 sentence description",
-  "tags": ["tag1", "tag2"]
+  "dueDate": "YYYY-MM-DD format from today ${new Date().toISOString().split('T')[0]}",
+  "description": "1-2 sentence helpful description",
+  "tags": ["tag1", "tag2", "tag3"]
 }`;
 
-    const response = await claudeAPI(prompt);
+    const response = await geminiAPI(prompt);
     const clean = response.replace(/```json|```/g, '').trim();
     const suggestion = JSON.parse(clean);
     res.json(suggestion);
   } catch (err) {
     console.error('Suggest error:', err.message);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'AI suggestion failed: ' + err.message });
   }
 });
 
@@ -99,26 +79,26 @@ router.post('/parse', protect, async (req, res) => {
     const { text } = req.body;
     if (!text) return res.status(400).json({ message: 'Text is required' });
 
-    const prompt = `Parse this into a task: "${text}"
-Today: ${new Date().toISOString().split('T')[0]}
+    const prompt = `You are a smart task management AI. Parse this natural language into a task: "${text}"
 
-Respond ONLY with valid JSON:
+Today's date is ${new Date().toISOString().split('T')[0]}.
+Respond ONLY with valid JSON, no explanation, no markdown:
 {
-  "title": "task title",
-  "description": "brief description",
+  "title": "clear task title",
+  "description": "brief description if details mentioned",
   "priority": "low" or "medium" or "high",
   "category": one of ["Work", "Personal", "Study", "Health", "Finance", "Shopping", "Other"],
-  "dueDate": "YYYY-MM-DD or null",
+  "dueDate": "YYYY-MM-DD or null if not mentioned",
   "tags": ["tag1", "tag2"]
 }`;
 
-    const response = await claudeAPI(prompt);
+    const response = await geminiAPI(prompt);
     const clean = response.replace(/```json|```/g, '').trim();
     const task = JSON.parse(clean);
     res.json(task);
   } catch (err) {
     console.error('Parse error:', err.message);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'AI parsing failed: ' + err.message });
   }
 });
 
@@ -134,15 +114,17 @@ router.post('/summary', protect, async (req, res) => {
       `- ${t.title} (${t.priority} priority, ${t.status})`
     ).join('\n');
 
-    const prompt = `Analyze these tasks and give a friendly 2-sentence summary with motivation:
-${taskList}
-Keep it short and encouraging.`;
+    const prompt = `You are ShivTask AI assistant. Analyze these tasks and give a friendly motivating summary in 2 sentences. Mention urgent items and give encouragement:
 
-    const summary = await claudeAPI(prompt);
-    res.json({ summary });
+${taskList}
+
+Today is ${new Date().toLocaleDateString()}. Keep it short, friendly and actionable.`;
+
+    const summary = await geminiAPI(prompt);
+    res.json({ summary: summary.trim() });
   } catch (err) {
     console.error('Summary error:', err.message);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: 'AI summary failed: ' + err.message });
   }
 });
 
