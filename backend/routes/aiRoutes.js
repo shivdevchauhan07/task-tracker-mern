@@ -11,6 +11,9 @@ const claudeAPI = (prompt) => {
       messages: [{ role: 'user', content: prompt }]
     });
 
+    console.log('Calling Claude API...');
+    console.log('API Key exists:', !!process.env.CLAUDE_API_KEY);
+
     const options = {
       hostname: 'api.anthropic.com',
       path: '/v1/messages',
@@ -26,22 +29,44 @@ const claudeAPI = (prompt) => {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
+        console.log('Claude response status:', res.statusCode);
+        console.log('Claude response body:', body.substring(0, 200));
         try {
           const parsed = JSON.parse(body);
-          resolve(parsed.content[0].text);
+          if (parsed.error) {
+            reject(new Error(parsed.error.message));
+          } else {
+            resolve(parsed.content[0].text);
+          }
         } catch (err) {
           reject(new Error('Failed to parse AI response'));
         }
       });
     });
 
-    req.on('error', reject);
+    req.on('error', (err) => {
+      console.error('Claude API request error:', err.message);
+      reject(err);
+    });
+
     req.write(data);
     req.end();
   });
 };
 
-// Smart task suggestions based on title
+// Test AI route
+router.get('/test', protect, async (req, res) => {
+  try {
+    console.log('Testing Claude API...');
+    const response = await claudeAPI('Say hello in one word');
+    res.json({ success: true, response });
+  } catch (err) {
+    console.error('AI test error:', err.message);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Smart task suggestions
 router.post('/suggest', protect, async (req, res) => {
   try {
     const { title } = req.body;
@@ -49,13 +74,13 @@ router.post('/suggest', protect, async (req, res) => {
 
     const prompt = `You are a smart task management AI. Based on this task title: "${title}"
     
-Suggest the best values for these fields. Respond ONLY with valid JSON, no explanation:
+Suggest the best values. Respond ONLY with valid JSON:
 {
   "priority": "low" or "medium" or "high",
   "category": one of ["Work", "Personal", "Study", "Health", "Finance", "Shopping", "Other"],
-  "dueDate": suggest a realistic due date in YYYY-MM-DD format from today ${new Date().toISOString().split('T')[0]},
-  "description": a helpful 1-2 sentence description,
-  "tags": array of 2-3 relevant tags
+  "dueDate": "YYYY-MM-DD",
+  "description": "1-2 sentence description",
+  "tags": ["tag1", "tag2"]
 }`;
 
     const response = await claudeAPI(prompt);
@@ -63,27 +88,28 @@ Suggest the best values for these fields. Respond ONLY with valid JSON, no expla
     const suggestion = JSON.parse(clean);
     res.json(suggestion);
   } catch (err) {
-    res.status(500).json({ message: 'AI suggestion failed' });
+    console.error('Suggest error:', err.message);
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Natural language task creation
+// Natural language parse
 router.post('/parse', protect, async (req, res) => {
   try {
     const { text } = req.body;
     if (!text) return res.status(400).json({ message: 'Text is required' });
 
-    const prompt = `You are a smart task management AI. Parse this natural language input into a task: "${text}"
+    const prompt = `Parse this into a task: "${text}"
+Today: ${new Date().toISOString().split('T')[0]}
 
-Today's date is ${new Date().toISOString().split('T')[0]}.
-Respond ONLY with valid JSON, no explanation:
+Respond ONLY with valid JSON:
 {
-  "title": "clear task title",
-  "description": "brief description if any details mentioned",
+  "title": "task title",
+  "description": "brief description",
   "priority": "low" or "medium" or "high",
   "category": one of ["Work", "Personal", "Study", "Health", "Finance", "Shopping", "Other"],
-  "dueDate": "YYYY-MM-DD format or null if not mentioned",
-  "tags": array of 2-3 relevant tags
+  "dueDate": "YYYY-MM-DD or null",
+  "tags": ["tag1", "tag2"]
 }`;
 
     const response = await claudeAPI(prompt);
@@ -91,30 +117,32 @@ Respond ONLY with valid JSON, no explanation:
     const task = JSON.parse(clean);
     res.json(task);
   } catch (err) {
-    res.status(500).json({ message: 'AI parsing failed' });
+    console.error('Parse error:', err.message);
+    res.status(500).json({ message: err.message });
   }
 });
 
-// AI daily summary
+// AI summary
 router.post('/summary', protect, async (req, res) => {
   try {
     const { tasks } = req.body;
-    if (!tasks || !tasks.length) return res.json({ summary: 'No tasks yet! Create your first task to get started. 🚀' });
+    if (!tasks || !tasks.length) {
+      return res.json({ summary: 'No tasks yet! Create your first task to get started. 🚀' });
+    }
 
     const taskList = tasks.map(t =>
-      `- ${t.title} (${t.priority} priority, ${t.status}, due: ${t.dueDate ? new Date(t.dueDate).toLocaleDateString() : 'no date'})`
+      `- ${t.title} (${t.priority} priority, ${t.status})`
     ).join('\n');
 
-    const prompt = `You are ShivTask AI assistant. Analyze these tasks and give a friendly, motivating summary in 2-3 sentences. Mention urgent items, progress, and encouragement:
-
+    const prompt = `Analyze these tasks and give a friendly 2-sentence summary with motivation:
 ${taskList}
-
-Today is ${new Date().toLocaleDateString()}. Keep it short, friendly and actionable.`;
+Keep it short and encouraging.`;
 
     const summary = await claudeAPI(prompt);
     res.json({ summary });
   } catch (err) {
-    res.status(500).json({ message: 'AI summary failed' });
+    console.error('Summary error:', err.message);
+    res.status(500).json({ message: err.message });
   }
 });
 
