@@ -13,7 +13,7 @@ const geminiAPI = (prompt) => {
     const apiKey = process.env.GEMINI_API_KEY;
     const options = {
       hostname: 'generativelanguage.googleapis.com',
-      path: `/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+      path: `/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     };
