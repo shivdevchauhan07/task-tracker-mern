@@ -23,13 +23,17 @@ const [summaryLoading, setSummaryLoading] = useState(false);
  useEffect(() => {
   fetchTasks();
   fetchStats();
-  loadAISummary();
 }, []);
+
+useEffect(() => {
+  if (tasks.length > 0) {
+    loadAISummary();
+  }
+}, [tasks.length]);
 
 const loadAISummary = async () => {
   setSummaryLoading(true);
   try {
-    const data = await fetchTasks();
     const { summary } = await aiAPI.summary(tasks);
     setAiSummary(summary);
   } catch (err) {
