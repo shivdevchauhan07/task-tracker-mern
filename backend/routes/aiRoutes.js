@@ -33,12 +33,14 @@ const openRouterAPI = (prompt) => {
             reject(new Error(parsed.error.message));
             return;
           }
-          const text = parsed.choices?.[0]?.message?.content;
-          if (!text) {
-            reject(new Error('No response from AI'));
-            return;
-          }
-          resolve(text);
+          const message = parsed.choices?.[0]?.message;
+const text = message?.content || message?.reasoning_content;
+if (!text) {
+  console.log('Full response:', JSON.stringify(parsed).substring(0, 500));
+  reject(new Error('No response from AI'));
+  return;
+}
+resolve(text);
         } catch (err) {
           reject(new Error('Failed to parse AI response'));
         }
