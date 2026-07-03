@@ -6,7 +6,7 @@ const { protect } = require('../middleware/auth');
 const openRouterAPI = (prompt) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
-      model: 'deepseek/deepseek-r1-0528:free',
+      model: 'deepseek/deepseek-r1-0528',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1024
     });
