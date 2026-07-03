@@ -3,19 +3,24 @@ const router = express.Router();
 const https = require('https');
 const { protect } = require('../middleware/auth');
 
-const geminiAPI = (prompt) => {
+const openRouterAPI = (prompt) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { maxOutputTokens: 1024, temperature: 0.3 }
+      model: 'meta-llama/llama-3.2-3b-instruct:free',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1024
     });
 
-    const apiKey = process.env.GEMINI_API_KEY;
     const options = {
-      hostname: 'generativelanguage.googleapis.com',
-      path: `/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`,
+      hostname: 'openrouter.ai',
+      path: '/api/v1/chat/completions',
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'HTTP-Referer': 'https://shivdevchauhan07-tasks.vercel.app',
+        'X-Title': 'ShivTask AI'
+      }
     };
 
     const req = https.request(options, res => {
@@ -28,14 +33,14 @@ const geminiAPI = (prompt) => {
             reject(new Error(parsed.error.message));
             return;
           }
-          const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+          const text = parsed.choices?.[0]?.message?.content;
           if (!text) {
-            reject(new Error('No response from Gemini'));
+            reject(new Error('No response from AI'));
             return;
           }
           resolve(text);
         } catch (err) {
-          reject(new Error('Failed to parse Gemini response'));
+          reject(new Error('Failed to parse AI response'));
         }
       });
     });
@@ -54,7 +59,7 @@ router.post('/suggest', protect, async (req, res) => {
 
     const prompt = `You are a smart task management AI. Based on this task title: "${title}"
 
-Suggest the best values. Respond ONLY with valid JSON, no explanation, no markdown:
+Respond ONLY with valid JSON, no explanation, no markdown backticks:
 {
   "priority": "low" or "medium" or "high",
   "category": one of ["Work", "Personal", "Study", "Health", "Finance", "Shopping", "Other"],
@@ -63,9 +68,10 @@ Suggest the best values. Respond ONLY with valid JSON, no explanation, no markdo
   "tags": ["tag1", "tag2", "tag3"]
 }`;
 
-    const response = await geminiAPI(prompt);
-    const clean = response.replace(/```json|```/g, '').trim();
-    const suggestion = JSON.parse(clean);
+    const response = await openRouterAPI(prompt);
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response');
+    const suggestion = JSON.parse(jsonMatch[0]);
     res.json(suggestion);
   } catch (err) {
     console.error('Suggest error:', err.message);
@@ -79,22 +85,23 @@ router.post('/parse', protect, async (req, res) => {
     const { text } = req.body;
     if (!text) return res.status(400).json({ message: 'Text is required' });
 
-    const prompt = `You are a smart task management AI. Parse this natural language into a task: "${text}"
+    const prompt = `You are a smart task management AI. Parse this into a task: "${text}"
+Today: ${new Date().toISOString().split('T')[0]}
 
-Today's date is ${new Date().toISOString().split('T')[0]}.
-Respond ONLY with valid JSON, no explanation, no markdown:
+Respond ONLY with valid JSON, no explanation, no markdown backticks:
 {
   "title": "clear task title",
-  "description": "brief description if details mentioned",
+  "description": "brief description",
   "priority": "low" or "medium" or "high",
   "category": one of ["Work", "Personal", "Study", "Health", "Finance", "Shopping", "Other"],
-  "dueDate": "YYYY-MM-DD or null if not mentioned",
+  "dueDate": "YYYY-MM-DD or null",
   "tags": ["tag1", "tag2"]
 }`;
 
-    const response = await geminiAPI(prompt);
-    const clean = response.replace(/```json|```/g, '').trim();
-    const task = JSON.parse(clean);
+    const response = await openRouterAPI(prompt);
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response');
+    const task = JSON.parse(jsonMatch[0]);
     res.json(task);
   } catch (err) {
     console.error('Parse error:', err.message);
@@ -110,17 +117,17 @@ router.post('/summary', protect, async (req, res) => {
       return res.json({ summary: 'No tasks yet! Create your first task to get started. 🚀' });
     }
 
-    const taskList = tasks.map(t =>
+    const taskList = tasks.slice(0, 10).map(t =>
       `- ${t.title} (${t.priority} priority, ${t.status})`
     ).join('\n');
 
-    const prompt = `You are ShivTask AI assistant. Analyze these tasks and give a friendly motivating summary in 2 sentences. Mention urgent items and give encouragement:
+    const prompt = `You are ShivTask AI. Give a friendly 2-sentence motivating summary of these tasks. Mention urgent ones and encourage the user:
 
 ${taskList}
 
-Today is ${new Date().toLocaleDateString()}. Keep it short, friendly and actionable.`;
+Keep it short, warm and actionable. No JSON needed, just plain text.`;
 
-    const summary = await geminiAPI(prompt);
+    const summary = await openRouterAPI(prompt);
     res.json({ summary: summary.trim() });
   } catch (err) {
     console.error('Summary error:', err.message);
