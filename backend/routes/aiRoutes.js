@@ -6,7 +6,7 @@ const { protect } = require('../middleware/auth');
 const openRouterAPI = (prompt) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
-      model: 'meta-llama/llama-3.2-3b-instruct:free',
+      model: 'mistralai/mistral-7b-instruct:free',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1024
     });
