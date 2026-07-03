@@ -119,21 +119,25 @@ router.post('/summary', protect, async (req, res) => {
       return res.json({ summary: 'No tasks yet! Create your first task to get started. 🚀' });
     }
 
-    const taskList = tasks.slice(0, 10).map(t =>
+    const taskList = tasks.slice(0, 5).map(t =>
       `- ${t.title} (${t.priority} priority, ${t.status})`
     ).join('\n');
 
-    const prompt = `You are ShivTask AI. Give a friendly 2-sentence motivating summary of these tasks. Mention urgent ones and encourage the user:
+    const prompt = `Give a friendly 2-sentence summary of these tasks and encourage the user. No JSON, just plain text:
+${taskList}`;
 
-${taskList}
-
-Keep it short, warm and actionable. No JSON needed, just plain text.`;
-
-    const summary = await openRouterAPI(prompt);
-    res.json({ summary: summary.trim() });
+    const response = await openRouterAPI(prompt);
+    
+    // Clean response - remove thinking tags if present
+    const clean = response
+      .replace(/<think>[\s\S]*?<\/think>/g, '')
+      .replace(/```[\s\S]*?```/g, '')
+      .trim();
+      
+    res.json({ summary: clean || 'Keep going, you are doing great! 💪' });
   } catch (err) {
     console.error('Summary error:', err.message);
-    res.status(500).json({ message: 'AI summary failed: ' + err.message });
+    res.json({ summary: 'Stay focused and keep completing your tasks! 💪🤖' });
   }
 });
 
