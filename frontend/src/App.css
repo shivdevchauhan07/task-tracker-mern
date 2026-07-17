@@ -31,11 +31,11 @@
 
 body {
   font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
+  background: linear-gradient(135deg, #0a0015 0%, #0f0f1a 40%, #000d1a 100%);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
 }
-
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -171,8 +171,9 @@ body {
 /* Kanban */
 .kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .kanban-column {
-  background: var(--card2); border-radius: 20px; padding: 16px;
-  min-height: 400px; border: 1px solid var(--border);
+  background: linear-gradient(180deg, #12122a, #0a0a1a);
+  border-radius: 20px; padding: 16px;
+  min-height: 400px; border: 1px solid #2a2a4a;
 }
 .kanban-col-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .kanban-col-title { font-size: 14px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 8px; }
@@ -181,10 +182,16 @@ body {
 
 /* Task Card */
 .task-card {
-  background: var(--card); border-radius: 18px; padding: 16px;
-  margin-bottom: 12px; border: 1px solid var(--border);
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: 18px; padding: 16px;
+  margin-bottom: 12px; border: 1px solid #2a2a4a;
   transition: transform .15s, box-shadow .15s, border-color .2s;
   position: relative; overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+.task-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(124,58,237,.2);
 }
 .task-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.3); }
 .task-card-stripe { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 18px 18px 0 0; }
