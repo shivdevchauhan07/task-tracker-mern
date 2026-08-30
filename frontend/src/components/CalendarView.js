@@ -7,7 +7,9 @@ const PRIORITY_COLORS = {
 };
 
 export default function CalendarView({ tasks = [] }) {
-  const [currentDate, setCurrentDate] = useState(new Date());
+const today = new Date();
+const [currentDate, setCurrentDate] = useState(today);
+const [selectedDay, setSelectedDay] = useState(today.getDate());
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -62,7 +64,20 @@ export default function CalendarView({ tasks = [] }) {
           <div key={index} className={`calendar-cell ${day ? "" : "empty"}`}>
             {day && (
               <>
-                <div className="calendar-date">{day}</div>
+              <div
+  className={`calendar-date ${
+    day === today.getDate() &&
+    month === today.getMonth() &&
+    year === today.getFullYear()
+      ? "today"
+      : ""
+  } ${
+    day === selectedDay ? "selected" : ""
+  }`}
+  onClick={() => setSelectedDay(day)}
+>
+  {day}
+</div>
 
                 {getTasks(day).slice(0,3).map(task=>(
                   <div
