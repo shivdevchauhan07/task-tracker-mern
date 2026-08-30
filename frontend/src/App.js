@@ -326,7 +326,9 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
         ) : view === 'list' ? (
           filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">📋</div>
+              <div className="empty-icon" style={{ fontSize: "72px" }}>
+  🚀
+</div>
               <div className="empty-title">No tasks found</div>
               <p style={{ color: 'var(--muted2)', marginBottom: 20 }}>Create your first task!</p>
               <button className="btn-add" onClick={() => setShowForm(true)}>+ Add Task</button>
