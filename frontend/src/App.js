@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { TaskProvider, useTaskContext } from './context/TaskContext';
 import TaskForm from './components/TaskForm';
 import KanbanBoard from './components/KanbanBoard';
+import CalendarView from './components/CalendarView';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -223,11 +224,12 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
 });
 
   const NAV = [
-    { id: 'board', icon: '⊞', label: 'Board' },
-    { id: 'list', icon: '☰', label: 'Tasks' },
-    { id: 'stats', icon: '📊', label: 'Stats' },
-    { id: 'profile', icon: '👤', label: 'Profile' },
-  ];
+  { id: 'board', icon: '⊞', label: 'Board' },
+  { id: 'list', icon: '☰', label: 'Tasks' },
+  { id: 'calendar', icon: '📅', label: 'Calendar' },
+  { id: 'stats', icon: '📊', label: 'Stats' },
+  { id: 'profile', icon: '👤', label: 'Profile' },
+];
  const greeting =
   new Date().getHours() < 12
     ? "Good Morning"
@@ -341,11 +343,13 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
           ) : (
             <div>{filtered.map(task => <ListItem key={task._id} task={task} onEdit={handleEdit} />)}</div>
           )
-        ) : view === 'stats' ? (
-          <StatsView tasks={tasks} />
-        ) : view === 'profile' ? (
-          <ProfileView user={user} onUpdate={onUpdateUser} onClose={onLogout} />
-        ) : null}
+     ) : view === 'calendar' ? (
+  <CalendarView tasks={tasks} />
+) : view === 'stats' ? (
+  <StatsView tasks={tasks} />
+) : view === 'profile' ? (
+  <ProfileView user={user} onUpdate={onUpdateUser} onClose={onLogout} />
+) : null}
       </main>
 
       <nav className="bottom-nav">
