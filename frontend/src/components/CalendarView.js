@@ -1,0 +1,85 @@
+import React, { useMemo, useState } from "react";
+
+const PRIORITY_COLORS = {
+  high: "#ef4444",
+  medium: "#f59e0b",
+  low: "#10b981",
+};
+
+export default function CalendarView({ tasks = [] }) {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const totalDays = new Date(year, month + 1, 0).getDate();
+
+  const days = useMemo(() => {
+    const arr = [];
+    for (let i = 0; i < firstDay; i++) arr.push(null);
+    for (let i = 1; i <= totalDays; i++) arr.push(i);
+    return arr;
+  }, [firstDay, totalDays]);
+
+  const monthName = currentDate.toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
+
+  const prevMonth = () =>
+    setCurrentDate(new Date(year, month - 1, 1));
+
+  const nextMonth = () =>
+    setCurrentDate(new Date(year, month + 1, 1));
+
+  const getTasks = (day) => {
+    return tasks.filter((task) => {
+      if (!task.dueDate) return false;
+      const d = new Date(task.dueDate);
+      return (
+        d.getDate() === day &&
+        d.getMonth() === month &&
+        d.getFullYear() === year
+      );
+    });
+  };
+
+  return (
+    <div className="calendar-card">
+      <div className="calendar-header">
+        <button onClick={prevMonth}>◀</button>
+        <h2>{monthName}</h2>
+        <button onClick={nextMonth}>▶</button>
+      </div>
+
+      <div className="calendar-grid">
+        {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(day=>(
+          <div key={day} className="calendar-day-name">{day}</div>
+        ))}
+
+        {days.map((day,index)=>(
+          <div key={index} className={`calendar-cell ${day ? "" : "empty"}`}>
+            {day && (
+              <>
+                <div className="calendar-date">{day}</div>
+
+                {getTasks(day).slice(0,3).map(task=>(
+                  <div
+                    key={task._id}
+                    className="calendar-dot"
+                    style={{
+                      background:
+                        PRIORITY_COLORS[task.priority] || "#2563eb",
+                    }}
+                    title={task.title}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
