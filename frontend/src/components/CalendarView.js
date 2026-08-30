@@ -54,6 +54,7 @@ const [selectedDay, setSelectedDay] = useState(today.getDate());
         <h2>{monthName}</h2>
         <button onClick={nextMonth}>▶</button>
       </div>
+
 <div className="calendar-task-list">
   <h3>
     📅 {selectedDay} {monthName.split(" ")[0]}
@@ -79,7 +80,6 @@ const [selectedDay, setSelectedDay] = useState(today.getDate());
     ))
   )}
 </div>
-
       <div className="calendar-grid">
         {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(day=>(
           <div key={day} className="calendar-day-name">{day}</div>
