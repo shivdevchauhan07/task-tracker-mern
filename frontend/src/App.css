@@ -34,6 +34,12 @@ body{
 [data-theme="dark"] body{
   background:linear-gradient(135deg,#020617,#0f172a,#1e293b);
 }
+.glass{
+  background:var(--card);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 12px 35px rgba(0,0,0,.12);
+}
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
