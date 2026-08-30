@@ -1822,3 +1822,71 @@ body{
   }
 
 }
+/* =========================================
+   STEP 4 - SAFE BOTTOM + PREMIUM HEADER
+========================================= */
+
+/* Make room for the floating bottom nav */
+.main-content{
+  padding-bottom:170px;
+}
+
+/* Extra space inside the calendar card */
+.calendar-card{
+  padding-bottom:40px;
+  margin-bottom:140px;
+}
+
+/* Premium month header */
+.calendar-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 4px 22px;
+  margin-bottom:18px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.calendar-header h2{
+  font-size:22px;
+  font-weight:900;
+  color:#fff;
+  letter-spacing:.3px;
+}
+
+/* Glass buttons */
+.calendar-header button{
+  width:58px;
+  height:58px;
+  border:none;
+  border-radius:20px;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+
+.calendar-header button:hover{
+  transform:scale(1.06);
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  box-shadow:0 8px 20px rgba(37,99,235,.35);
+}
+
+/* Mobile */
+@media (max-width:768px){
+  .calendar-card{
+    margin-bottom:150px;
+    padding-bottom:36px;
+  }
+
+  .calendar-header button{
+    width:52px;
+    height:52px;
+    border-radius:18px;
+  }
+
+  .calendar-header h2{
+    font-size:20px;
+  }
+}
