@@ -24,3 +24,50 @@ body{
   border-radius:18px;
   box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
+.stat-card{
+ padding:18px;
+ transition:.3s;
+}
+.filter-btn{
+ border:none;
+ padding:10px 18px;
+ border-radius:30px;
+ cursor:pointer;
+ background:white;
+}
+
+.filter-btn.active{
+ background:#2563eb;
+ color:white;
+}
+@media(max-width:768px){
+
+.stat-grid{
+grid-template-columns:1fr;
+}
+
+.task-card{
+flex-direction:column;
+align-items:flex-start;
+gap:12px;
+}
+
+}
+
+.stat-card:hover{
+ transform:translateY(-6px);
+}
+
+.task-card{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:18px;
+ margin-bottom:15px;
+ border-radius:18px;
+ transition:.25s;
+}
+
+.task-card:hover{
+ transform:scale(1.02);
+}
