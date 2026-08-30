@@ -246,8 +246,12 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
         </div>
         <button className="header-btn" onClick={toggleDark}>{darkMode ? '☀️' : '🌙'}</button>
         <div className="notif-wrap">
-          <button className="header-btn">🔔</button>
-          {overdue > 0 && <span className="notif-badge">{overdue}</span>}
+          <button
+  className="header-btn"
+  title={`${overdue} overdue task${overdue !== 1 ? "s" : ""}`}
+>
+  {overdue > 0 ? "🔴" : "🔔"}
+</button>
         </div>
         <button onClick={() => setShowForm(true)} className="btn-add">+ Add Task</button>
       </header>
