@@ -203,7 +203,19 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const circ = 2 * Math.PI * 45;
 
-  const filtered = tasks.filter(t => !search || t.title.toLowerCase().includes(search.toLowerCase()));
+  const filtered = tasks.filter(task => {
+  if (!search) return true;
+
+  const q = search.toLowerCase();
+
+  return (
+    task.title.toLowerCase().includes(q) ||
+    task.description?.toLowerCase().includes(q) ||
+    task.category?.toLowerCase().includes(q) ||
+    task.priority?.toLowerCase().includes(q) ||
+    task.status?.toLowerCase().includes(q)
+  );
+});
 
   const NAV = [
     { id: 'board', icon: '⊞', label: 'Board' },
