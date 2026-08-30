@@ -151,7 +151,12 @@ function ProfileView({ user, onUpdate, onClose }) {
         ))}
       </div>
 
-      <button onClick={onClose} style={{ width: '100%', marginTop: 16, padding: 14, border: 'none', borderRadius: 16, background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+      <button
+  onClick={() => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      onClose();
+    }
+  }} style={{ width: '100%', marginTop: 16, padding: 14, border: 'none', borderRadius: 16, background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
         Logout
       </button>
     </div>
