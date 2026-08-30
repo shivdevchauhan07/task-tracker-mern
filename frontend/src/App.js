@@ -240,12 +240,9 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
             <div className="welcome-inner">
               <div>
                 <p className="welcome-tag">👋 Welcome back!</p>
-                const greeting =
-  new Date().getHours() < 12
-    ? "Good Morning"
-    : new Date().getHours() < 18
-    ? "Good Afternoon"
-    : "Good Evening";
+                <h1 className="welcome-title">
+  {greeting}, {user.name?.split(" ")[0]} 👋
+</h1>
                 <p className="welcome-sub">"Discipline today, success tomorrow."</p>
                 <div className="welcome-stats">
                   {[{ label: 'Total', value: total, color: '#a78bfa' }, { label: 'Done', value: done, color: '#10b981' }, { label: 'Overdue', value: overdue, color: '#ef4444' }].map(s => (
