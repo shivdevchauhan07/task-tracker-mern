@@ -211,6 +211,12 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
     { id: 'stats', icon: '📊', label: 'Stats' },
     { id: 'profile', icon: '👤', label: 'Profile' },
   ];
+ const greeting =
+  new Date().getHours() < 12
+    ? "Good Morning"
+    : new Date().getHours() < 18
+    ? "Good Afternoon"
+    : "Good Evening";
 
   return (
     <div className="app">
