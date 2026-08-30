@@ -111,23 +111,7 @@ body{
 .main-content { max-width: 1100px; margin: 0 auto; padding: 20px 16px 100px; width: 100%; flex: 1; }
 
 /* Welcome Banner */
-.welcome-banner {
-  background: linear-gradient(135deg, #1a0533, #0a1628);
-  border-radius: 24px; padding: 24px; margin-bottom: 20px;
-  border: 1px solid var(--border); position: relative; overflow: hidden;
-}
-.welcome-banner::before {
-  content: ''; position: absolute; top: -40px; right: -40px;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(124,58,237,.15), transparent);
-  border-radius: 50%;
-}
-.welcome-banner::after {
-  content: ''; position: absolute; bottom: -40px; left: 100px;
-  width: 150px; height: 150px;
-  background: radial-gradient(circle, rgba(6,182,212,.1), transparent);
-  border-radius: 50%;
-}
+
 .welcome-inner { display: flex; justify-content: space-between; align-items: center; position: relative; }
 .welcome-tag { font-size: 13px; color: var(--primary-light); font-weight: 700; margin-bottom: 4px; }
 .welcome-title { font-size: 24px; font-weight: 900; color: var(--text); margin-bottom: 4px; }
