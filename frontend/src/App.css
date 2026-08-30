@@ -918,16 +918,184 @@ body{
   }
 
 }
+/* =========================
+   Profile Page
+========================= */
 
-/* Profile */
-.profile-banner { background: var(--gradient); border-radius: 24px; padding: 32px 24px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(124,58,237,.3); }
-.profile-avatar { width: 88px; height: 88px; border-radius: 50%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 40px; font-weight: 900; color: #fff; border: 3px solid rgba(255,255,255,.4); }
-.profile-name { font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 4px; }
-.profile-email { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 20px; }
-.profile-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.profile-stat { background: var(--card); border-radius: 18px; padding: 18px; text-align: center; }
-.achievements-section { background: var(--card); border-radius: 18px; padding: 20px; border: 1px solid var(--border); }
-.achievement-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+/* Banner */
+
+.profile-banner{
+  position:relative;
+  background:var(--gradient);
+  border-radius:28px;
+  padding:34px 24px;
+  text-align:center;
+  overflow:hidden;
+  margin-bottom:22px;
+  box-shadow:0 20px 45px rgba(124,58,237,.35);
+}
+
+.profile-banner::before{
+  content:"";
+  position:absolute;
+  top:-80px;
+  right:-60px;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+}
+
+.profile-banner::after{
+  content:"";
+  position:absolute;
+  bottom:-70px;
+  left:-40px;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+
+/* Avatar */
+
+.profile-avatar{
+  position:relative;
+  z-index:2;
+  width:96px;
+  height:96px;
+  margin:0 auto 18px;
+  border-radius:50%;
+  background:rgba(255,255,255,.18);
+  border:3px solid rgba(255,255,255,.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+  font-weight:900;
+  color:#fff;
+  box-shadow:0 12px 28px rgba(0,0,0,.18);
+}
+
+.profile-name{
+  position:relative;
+  z-index:2;
+  font-size:24px;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:6px;
+}
+
+.profile-email{
+  position:relative;
+  z-index:2;
+  font-size:13px;
+  color:rgba(255,255,255,.82);
+  margin-bottom:22px;
+}
+
+/* Stats Grid */
+
+.profile-stats-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  margin-bottom:22px;
+}
+
+.profile-stat{
+  background:var(--card);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
+  transition:all .25s ease;
+}
+
+.profile-stat:hover{
+  transform:translateY(-6px);
+  box-shadow:0 16px 36px rgba(37,99,235,.16);
+}
+
+/* Achievements */
+
+.achievements-section{
+  background:var(--card);
+  backdrop-filter:blur(18px);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:22px;
+}
+
+.achievement-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px;
+  border-radius:16px;
+  transition:all .25s ease;
+}
+
+.achievement-row:hover{
+  background:rgba(37,99,235,.08);
+}
+
+.achievement-row span:first-child{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(124,58,237,.12);
+  font-size:22px;
+}
+
+/* Logout Button */
+
+.profile-logout{
+  width:100%;
+  margin-top:20px;
+  padding:15px;
+  border:none;
+  border-radius:18px;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+
+.profile-logout:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(239,68,68,.35);
+}
+
+/* Mobile */
+
+@media(max-width:768px){
+
+  .profile-banner{
+    padding:28px 20px;
+  }
+
+  .profile-avatar{
+    width:82px;
+    height:82px;
+    font-size:36px;
+  }
+
+  .profile-name{
+    font-size:22px;
+  }
+
+  .profile-stat{
+    padding:18px;
+  }
+
+}
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); display: flex; align-items: flex-end; justify-content: center; z-index: 200; backdrop-filter: blur(8px); }
