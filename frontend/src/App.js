@@ -330,7 +330,7 @@ function TaskDashboard({ user, onLogout, onUpdateUser, darkMode, toggleDark }) {
   🚀
 </div>
               <div className="empty-title">No tasks found</div>
-              <p style={{ color: 'var(--muted2)', marginBottom: 20 }}>Create your first task!</p>
+              <p style={{ color: 'var(--muted2)', marginBottom: 20 }}>Start organizing your day by creating your first task.</p>
               <button className="btn-add" onClick={() => setShowForm(true)}>+ Add Task</button>
             </div>
           ) : (
