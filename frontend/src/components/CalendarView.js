@@ -54,6 +54,31 @@ const [selectedDay, setSelectedDay] = useState(today.getDate());
         <h2>{monthName}</h2>
         <button onClick={nextMonth}>▶</button>
       </div>
+<div className="calendar-task-list">
+  <h3>
+    📅 {selectedDay} {monthName.split(" ")[0]}
+  </h3>
+
+  {getTasks(selectedDay).length === 0 ? (
+    <p className="calendar-empty">No tasks for this day.</p>
+  ) : (
+    getTasks(selectedDay).map(task => (
+      <div key={task._id} className="calendar-task-item">
+        <span
+          className="calendar-task-color"
+          style={{
+            background:
+              PRIORITY_COLORS[task.priority] || "#2563eb",
+          }}
+        />
+        <div>
+          <strong>{task.title}</strong>
+          <p>{task.status}</p>
+        </div>
+      </div>
+    ))
+  )}
+</div>
 
       <div className="calendar-grid">
         {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(day=>(
