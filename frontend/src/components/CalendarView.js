@@ -103,19 +103,29 @@ const [selectedDay, setSelectedDay] = useState(today.getDate());
 >
   {day}
 </div>
+{getTasks(day).length > 0 && (
+  <>
+    <div className="calendar-dots-row">
+      {getTasks(day).slice(0,3).map(task => (
+        <span
+          key={task._id}
+          className="calendar-dot"
+          style={{
+            background: PRIORITY_COLORS[task.priority] || "#2563eb",
+          }}
+        />
+      ))}
+    </div>
 
-                {getTasks(day).slice(0,3).map(task=>(
-                  <div
-                    key={task._id}
-                    className="calendar-dot"
-                    style={{
-                      background:
-                        PRIORITY_COLORS[task.priority] || "#2563eb",
-                    }}
-                    title={task.title}
-                  />
-                ))}
+    {getTasks(day).length > 3 && (
+      <span className="calendar-more">
+        +{getTasks(day).length - 3}
+      </span>
+    )}
+  </>
+)}
               </>
+                
             )}
           </div>
         ))}
