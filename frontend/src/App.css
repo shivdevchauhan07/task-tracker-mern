@@ -737,6 +737,25 @@ body{
   font-size:12px;
   color:var(--muted);
 }
+/* ===== STEP 6 - TODAY BUTTON ===== */
+
+.calendar-toolbar{
+  display:flex;
+  justify-content:flex-end;
+  margin:0 0 14px;
+}
+
+.calendar-today-btn{
+  border:none;
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(37,99,235,.35);
+}
 
 /* =========================
    Task Cards
