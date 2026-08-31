@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 
 const PRIORITY_COLORS = {
   high: "#ef4444",
@@ -9,7 +9,23 @@ const PRIORITY_COLORS = {
 export default function CalendarView({ tasks = [] }) {
 const today = new Date();
 const [currentDate, setCurrentDate] = useState(today);
-const [selectedDay, setSelectedDay] = useState(today.getDate());
+const touchStartX = useRef(0);
+
+const handleTouchStart = (e) => {
+  touchStartX.current = e.touches[0].clientX;
+};
+
+const handleTouchEnd = (e) => {
+  const diff = touchStartX.current - e.changedTouches[0].clientX;
+
+  if (diff > 50) nextMonth();      // Swipe left
+  if (diff < -50) prevMonth();     // Swipe right
+};
+
+const goToToday = () => {
+  setCurrentDate(today);
+  setSelectedDay(today.getDate());
+};
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -48,13 +64,20 @@ const [selectedDay, setSelectedDay] = useState(today.getDate());
   };
 
   return (
-    <div className="calendar-card">
+    <div
+  className="calendar-card"
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}>
       <div className="calendar-header">
         <button onClick={prevMonth}>◀</button>
         <h2>{monthName}</h2>
         <button onClick={nextMonth}>▶</button>
       </div>
-
+<div className="calendar-toolbar">
+  <button className="calendar-today-btn" onClick={goToToday}>
+    📍 Today
+  </button>
+</div>
 <div className="calendar-task-list">
   <h3>
     📅 {selectedDay} {monthName.split(" ")[0]}
