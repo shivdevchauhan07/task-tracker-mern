@@ -73,11 +73,7 @@ const goToToday = () => {
         <h2>{monthName}</h2>
         <button onClick={nextMonth}>▶</button>
       </div>
-<div className="calendar-toolbar">
-  <button className="calendar-today-btn" onClick={goToToday}>
-    📍 Today
-  </button>
-</div>
+
 <div className="calendar-task-list">
   <h3>
     📅 {selectedDay} {monthName.split(" ")[0]}
