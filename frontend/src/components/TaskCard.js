@@ -1,61 +1,70 @@
-import React, { useState } from 'react';
-import { useTaskContext } from '../context/TaskContext';
+import "./TaskCard.css";
+import { Calendar, CheckCircle } from "lucide-react";
 
-const PRIORITY_COLORS = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' };
-const STATUS_LABELS = { todo: 'To Do', 'in-progress': 'In Progress', completed: 'Completed' };
-
-export default function TaskCard({ task, onEdit }) {
-  const { updateTask, deleteTask } = useTaskContext();
-  const [confirming, setConfirming] = useState(false);
-
-  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'completed';
-
-  const cycleStatus = async () => {
-    const next = { todo: 'in-progress', 'in-progress': 'completed', completed: 'todo' };
-    await updateTask(task._id, { ...task, status: next[task.status] });
-  };
-
-  const handleDelete = async () => {
-    if (!confirming) { setConfirming(true); return; }
-    await deleteTask(task._id);
-  };
+export default function TaskCard({
+  task,
+  onComplete,
+  onEdit,
+  onDelete,
+}) {
 
   return (
-    <div className={`task-card priority-${task.priority} ${task.status === 'completed' ? 'done' : ''}`}>
-      <div className="task-card-header">
-        <span className="priority-dot" style={{ background: PRIORITY_COLORS[task.priority] }} />
-        <span className={`status-badge status-${task.status}`}>
-          {STATUS_LABELS[task.status]}
+    <div className="task-card">
+
+      <div className="task-top">
+        <h3 className="task-title">{task.title}</h3>
+
+        <span className={`priority ${task.priority.toLowerCase()}`}>
+          {task.priority}
         </span>
-        <div className="card-actions">
-          <button className="icon-btn" onClick={() => onEdit(task)}>✏️</button>
-          <button
-            className={`icon-btn ${confirming ? 'danger' : ''}`}
-            onClick={handleDelete}
-            onBlur={() => setConfirming(false)}
-          >{confirming ? '⚠️' : '🗑️'}</button>
+      </div>
+
+      <p className="task-desc">{task.description}</p>
+
+      <div className="task-info">
+        <span>
+          <Calendar size={14}/> {task.dueDate || "No deadline"}
+        </span>
+
+        <span>
+          <CheckCircle size={14}/> {task.subtasks?.length || 0} subtasks
+        </span>
+      </div>
+
+      <div className="progress">
+        <small>Progress {task.progress || 0}%</small>
+
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${task.progress || 0}%` }}
+          />
         </div>
       </div>
-      <h3 className={`task-title ${task.status === 'completed' ? 'strikethrough' : ''}`}>
-        {task.title}
-      </h3>
-      {task.description && <p className="task-desc">{task.description}</p>}
-      <div className="task-meta">
-        {task.dueDate && (
-          <span className={`due-date ${isOverdue ? 'overdue' : ''}`}>
-            📅 {new Date(task.dueDate).toLocaleDateString()}
-            {isOverdue && ' — Overdue'}
-          </span>
-        )}
-        {task.tags?.length > 0 && (
-          <div className="tags">
-            {task.tags.map(tag => <span key={tag} className="tag">#{tag}</span>)}
-          </div>
-        )}
+
+      <div className="task-actions">
+        <button
+          className="task-btn complete-btn"
+          onClick={()=>onComplete(task._id)}
+        >
+          Complete
+        </button>
+
+        <button
+          className="task-btn edit-btn"
+          onClick={()=>onEdit(task)}
+        >
+          Edit
+        </button>
+
+        <button
+          className="task-btn delete-btn"
+          onClick={()=>onDelete(task._id)}
+        >
+          Delete
+        </button>
       </div>
-      <button className="status-toggle" onClick={cycleStatus}>
-        {task.status === 'completed' ? '↩ Reopen' : task.status === 'todo' ? '▶ Start' : '✓ Complete'}
-      </button>
+
     </div>
   );
 }
