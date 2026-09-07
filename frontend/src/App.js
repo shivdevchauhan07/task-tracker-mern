@@ -1,14 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Toaster } from 'react-hot-toast';
-import { TaskProvider, useTaskContext } from './context/TaskContext';
-import TaskForm from './components/TaskForm';
-import KanbanBoard from './components/KanbanBoard';
-import CalendarView from './components/CalendarView';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Profile from './pages/Profile';
-import { aiAPI } from './utils/api';
-import './App.css';
+
+import Dashboard from "./pages/Dashboard";
+
+// Inside Routes
+<Route path="/" element={<Dashboard />} />
 
 const CATEGORY_ICONS = { Work: '💼', Personal: '👤', Study: '📚', Health: '💪', Finance: '💰', Shopping: '🛍️', Other: '📌' };
 const CATEGORY_COLORS = { Work: '#7c3aed', Personal: '#ec4899', Study: '#06b6d4', Health: '#10b981', Finance: '#f59e0b', Shopping: '#f97316', Other: '#64748b' };
