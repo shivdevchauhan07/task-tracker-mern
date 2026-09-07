@@ -12,7 +12,17 @@ const initialState = {
   filters: { status: '', priority: '', search: '', sortBy: 'createdAt', order: 'desc' },
   pagination: { page: 1, totalPages: 1, total: 0 }
 };
+const handleDragEnd = (result)=>{
 
+  if(!result.destination) return;
+
+  const {draggableId,destination}=result;
+
+  updateTask(draggableId,{
+    status: destination.droppableId
+  });
+
+};
 function reducer(state, action) {
   switch (action.type) {
     case 'SET_LOADING': return { ...state, loading: action.payload };
