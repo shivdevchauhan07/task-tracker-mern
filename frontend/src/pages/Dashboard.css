@@ -1,0 +1,22 @@
+
+.dashboard{
+  min-height:100vh;
+  background:#0b1220;
+  color:white;
+  padding:18px;
+}
+
+.dashboard-header{
+  margin-bottom:20px;
+}
+
+.dashboard-header h1{
+  margin:0;
+  font-size:30px;
+  font-weight:700;
+}
+
+.dashboard-header p{
+  margin-top:5px;
+  color:#94a3b8;
+}
