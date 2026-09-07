@@ -1,0 +1,47 @@
+.board{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  padding:10px 0 20px;
+}
+
+.board::-webkit-scrollbar{
+  height:6px;
+}
+
+.board::-webkit-scrollbar-thumb{
+  background:#374151;
+  border-radius:999px;
+}
+
+.column{
+  min-width:280px;
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  padding:14px;
+}
+
+.column-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.column-title{
+  font-weight:700;
+  font-size:18px;
+}
+
+.task-count{
+  background:#1e293b;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.drop-zone{
+  min-height:180px;
+}
